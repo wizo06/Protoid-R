@@ -153,7 +153,18 @@ const updateRole = async (msg, messageAuthorID) => {
 
 const getrep = async msg => {
   try {
-    if (msg.content.split(' ').length === 2) {
+    /* Get rep points from self */
+    if (msg.content === '!getrep') {
+      let doc = await db.collection('users').doc(msg.author.id).get();
+      if (doc.exists) {
+        msg.channel.send(`<@${msg.author.id}> has ${doc.data().repPoints} reputation points.`);
+      }
+      else {
+        msg.channel.send(`<@${msg.author.id}> has 0 reputation points.`);
+      }
+    }
+    /* Get rep points from ID */
+    else if (msg.content.split(' ').length === 2) {
       let discordID = msg.content.split(' ')[1];
 
       let doc = await db.collection('users').doc(discordID).get();
@@ -221,22 +232,40 @@ const getrolesid = async msg => {
   }
 }
 
+const isMember = msg => {
+  if (msg.members.roles.get(config.memberRole)) return true;
+  else return false;
+}
+
+const isStaff = msg => {
+  if (msg.members.roles.get(config.staffRole)) return true;
+  else return false;
+}
+
 BOT.on('message', msg => {
   if (msg.author.id === BOT.user.id) return;
 
+  let command = msg.content.split(' ')[0];
+
   switch(msg.channel.type) {
     case 'text':
-      if (msg.content === '!getrolesid') getrolesid(msg);
-      else if (msg.channel.id === config.trade_repChannelID) plusrep(msg);
-      else if (msg.member.roles.get(config.staffRole)) {
-        switch(msg.content.split(' ')[0]) {
+      if (msg.channel.id === config.trade_repChannelID) plusrep(msg);
+
+      if (isMember(msg)) {
+        switch(command) {
           case '!getrep':
             getrep(msg);
             break;
+        }
+      }
+
+      if (isStaff(msg)) {
+        switch(command) {
           case '!setrep':
             setrep(msg);
             break;
-          default:
+          case '!getrolesid':
+            getrolesid(msg);
             break;
         }
       }
