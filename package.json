@@ -1,0 +1,17 @@
+{
+  "name": "Protoid-R",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "firebase-admin": "^7.0.0",
+    "moment": "^2.24.0"
+  }
+}
