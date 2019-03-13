@@ -233,8 +233,14 @@ const getrolesid = async msg => {
 }
 
 const isMember = msg => {
-  if (msg.member.roles.get(config.memberRole)) return true;
-  else return false;
+  try {
+    if (msg.member.roles.get(config.memberRole)) return true;
+    else return false;
+  }
+  catch (err) {
+    console.log(err);
+    return false;
+  }
 }
 
 const isStaff = msg => {
