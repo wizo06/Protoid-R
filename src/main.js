@@ -1,8 +1,9 @@
 const admin = require('firebase-admin');
-const config = require('../config/prodConfig.json');
+const config = require('../config/eu.json');
 const moment = require('moment');
 const discord = require('discord.js');
 const serviceAccount = require('../config/protoid-r-firebase-adminsdk-zko60-57f5ed14fa.json');
+const token = require('../config/token.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -90,7 +91,7 @@ const updateRole = async (msg, messageAuthorID) => {
         let repPoints = messageAuthorDoc.data().repPoints;
 
         if (repPoints >= 30) {
-          let guildMember = await BOT.guilds.get(config.guildID).members.get(messageAuthorID).addRole(config.plusThirtyRepRole);
+          let guildMember = await BOT.guilds.get(msg.guild.id).members.get(messageAuthorID).addRole(config.plusThirtyRepRole);
           guildMember.removeRole(config.plusFifteenRepRole);
           guildMember.removeRole(config.plusFiveRepRole);
           guildMember.removeRole(config.plusThreeRepRole);
@@ -98,7 +99,7 @@ const updateRole = async (msg, messageAuthorID) => {
           resolve(config.plusThirtyRepRole);
         }
         else if (repPoints >= 15) {
-          let guildMember = await BOT.guilds.get(config.guildID).members.get(messageAuthorID).addRole(config.plusFifteenRepRole);
+          let guildMember = await BOT.guilds.get(msg.guild.id).members.get(messageAuthorID).addRole(config.plusFifteenRepRole);
           guildMember.removeRole(config.plusThirtyRepRole);
           guildMember.removeRole(config.plusFiveRepRole);
           guildMember.removeRole(config.plusThreeRepRole);
@@ -106,7 +107,7 @@ const updateRole = async (msg, messageAuthorID) => {
           resolve(config.plusFifteenRepRole);
         }
         else if (repPoints >= 5) {
-          let guildMember = await BOT.guilds.get(config.guildID).members.get(messageAuthorID).addRole(config.plusFiveRepRole);
+          let guildMember = await BOT.guilds.get(msg.guild.id).members.get(messageAuthorID).addRole(config.plusFiveRepRole);
           guildMember.removeRole(config.plusThirtyRepRole);
           guildMember.removeRole(config.plusFifteenRepRole);
           guildMember.removeRole(config.plusThreeRepRole);
@@ -114,7 +115,7 @@ const updateRole = async (msg, messageAuthorID) => {
           resolve(config.plusFiveRepRole);
         }
         else if (repPoints >= 3) {
-          let guildMember = await BOT.guilds.get(config.guildID).members.get(messageAuthorID).addRole(config.plusThreeRepRole);
+          let guildMember = await BOT.guilds.get(msg.guild.id).members.get(messageAuthorID).addRole(config.plusThreeRepRole);
           guildMember.removeRole(config.plusThirtyRepRole);
           guildMember.removeRole(config.plusFifteenRepRole);
           guildMember.removeRole(config.plusFiveRepRole);
@@ -122,7 +123,7 @@ const updateRole = async (msg, messageAuthorID) => {
           resolve(config.plusThreeRepRole);
         }
         else if (repPoints >= 1) {
-          let guildMember = await BOT.guilds.get(config.guildID).members.get(messageAuthorID).addRole(config.plusOneRepRole);
+          let guildMember = await BOT.guilds.get(msg.guild.id).members.get(messageAuthorID).addRole(config.plusOneRepRole);
           guildMember.removeRole(config.plusThirtyRepRole);
           guildMember.removeRole(config.plusFifteenRepRole);
           guildMember.removeRole(config.plusFiveRepRole);
@@ -130,7 +131,7 @@ const updateRole = async (msg, messageAuthorID) => {
           resolve(config.plusOneRepRole);
         }
         else if (repPoints === 0) {
-          let guildMember = await BOT.guilds.get(config.guildID).members.get(messageAuthorID);
+          let guildMember = await BOT.guilds.get(msg.guild.id).members.get(messageAuthorID);
           guildMember.removeRole(config.plusThirtyRepRole);
           guildMember.removeRole(config.plusFifteenRepRole);
           guildMember.removeRole(config.plusFiveRepRole);
@@ -216,7 +217,7 @@ const getrolesid = async msg => {
   try {
     let fields = [];
 
-    BOT.guilds.get(config.guildID).roles.map(x => {
+    BOT.guilds.get(msg.guild.id).roles.map(x => {
       fields.push({name: x.id, value: x.name})
     })
 
@@ -285,7 +286,7 @@ BOT.on('error', err => {
 });
 
 /*Log in*/
-BOT.login(config.token)
+BOT.login(token.discord)
 .then(async () => {
   try {
     console.log(`${FgGreen}[${moment().format('YYYY-MM-DD HH:mm:ss')}] Logged in as ${BOT.user.tag}${Reset}`);
