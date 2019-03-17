@@ -213,6 +213,49 @@ const setrep = async msg => {
   }
 }
 
+const addrep = async msg => {
+  try {
+    if (msg.content.split(' ').length === 3) {
+      let discordID = msg.content.split(' ')[1];
+      let addAmount = parseInt(msg.content.split(' ')[2]);
+
+      if (!isNaN(addAmount)) {
+        let doc = await db.collection('users').doc(discordID).get();
+        if (doc.exists) {
+          /* Update reputation point */
+          let repPoints = doc.data().repPoints;
+          await db.collection('users').doc(discordID).update({ repPoints: repPoints + addAmount})
+
+          msg.channel.send(`<@${discordID}>'s reputation points is now ${repPoints + addAmount}.`);
+
+          /* Update role */
+          let role = await updateRole(msg, discordID);
+          msg.channel.send(`<@${discordID}>'s role is now <@&${role}>`);
+        }
+        else {
+          /* Update reputation point */
+          await db.collection('users').doc(discordID).set({ repPoints: addAmount})
+
+          msg.channel.send(`<@${discordID}>'s reputation points is now ${addAmount}.`);
+
+          /* Update role */
+          let role = await updateRole(msg, discordID);
+          msg.channel.send(`<@${discordID}>'s role is now <@&${role}>`);
+        }
+      }
+      else {
+        msg.channel.send(`Error! ${msg.content.split(' ')[2]} is not a number. Correct usage is: \`!addrep 1234567890 6\` (replace 1234567890 with discord ID)`)
+      }
+    }
+    else {
+      msg.reply('Error! Wrong usage. Correct usage is: `!addrep 1234567890 6` (replace 1234567890 with discord ID)');
+    }
+  }
+  catch (err) {
+    console.log(`${FgRed}[${moment().format('YYYY-MM-DD HH:mm:ss')}] ${err}${Reset}`);
+  }
+}
+
 const getrolesid = async msg => {
   try {
     let fields = [];
@@ -268,6 +311,9 @@ BOT.on('message', msg => {
 
       if (isStaff(msg)) {
         switch(command) {
+          case '!addrep':
+            addrep(msg);
+            break;
           case '!setrep':
             setrep(msg);
             break;
